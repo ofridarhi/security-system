@@ -1,0 +1,50 @@
+# docker-compose.yml
+version: "3.8"
+
+services:
+  # Redis - This will act as a message queue (Message Broker) between the Ingestion Service and the Processing Service.
+  redis:
+    image: "redis:latest"
+    container_name: redis_bus
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  # MongoDB - This will be used to store event logs from the security cameras.
+  mongodb:
+    image: "mongo:latest"
+    container_name: mongodb_storage
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+
+  # PostgreSQL - This will store relational data: users, cameras, settings, face encodings, etc.
+  postgres:
+    image: "postgres:latest"
+    container_name: postgres_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password 
+      POSTGRES_DB: security_system_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+
+volumes:
+  mongodb_data:
+  postgres_data:
