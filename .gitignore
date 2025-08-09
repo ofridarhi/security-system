@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*build/
+*.egg-info/
+dist/
+venv/
+.env
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# IDE files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
