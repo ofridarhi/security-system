@@ -2,14 +2,15 @@
 import redis
 import time
 import logging
-
+    
+    
 # Configure basic logging to see output clearly.
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def main():
     # Connect to the Redis instance running inside Docker.
     # We also use "localhost" here as the port is exposed to the host.
-    r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+    r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=False)
     
     try:
         # Check if the connection to Redis is successful.

@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
-
-    "github.com/go-redis/redis/v8"
+	"gocv.io/x/gocv"
+	"github.com/go-redis/redis/v8"
 )
 
 var ctx = context.Background()
@@ -27,18 +26,49 @@ func main() {
 	}
 	log.Println("Connected to Redis successfully!")
 
-	// A loop that publishes a message every 2 seconds.
+	// open camera.
+	webcam, err := gocv.VideoCaptureDevice(0)
+	if err != nil {
+		log.Fatalf("Error opening video capture device: %v\n", err)
+	}
+	defer webcam.Close()
+
+	img := gocv.NewMat()
+	defer img.Close() 
+
+	log.Println("Starting to read frames from webcam...")
+
 	for {
-		message := fmt.Sprintf("Hello from Go Ingestion Service at %s", time.Now().Format(time.RFC3339))
-		
-		// Publish the message to the "frames_channel".
-		err := rdb.Publish(ctx, "frames_channel", message).Err()
-		if err != nil {
-			log.Printf("Failed to publish message: %v", err)
-		} else {
-			log.Printf("Published: '%s'", message)
-		}
-		
-		time.Sleep(2 * time.Second)
+		//troubleshooting 
+		 if ok := webcam.Read(&img); !ok {
+            log.Printf("Device closed")
+            return
+        }
+        if img.Empty() {
+            log.Println("Empty frame received, skipping")
+            continue
+        }
+
+		//reading frame
+		nativeByteBuffer, err := gocv.IMEncode(gocv.JPEGFileExt, img)
+    	if err != nil {
+			log.Printf("Failed to encode frame: %v", err)
+			continue
+    }
+
+    bytesToSend := nativeByteBuffer.GetBytes()
+
+    // sendig to  Redis
+    err = rdb.Publish(ctx, "frames_channel", bytesToSend).Err()
+
+    nativeByteBuffer.Close() 
+    
+    if err != nil {
+        log.Printf("Failed to publish frame to Redis: %v", err)
+    } else {
+        log.Printf("Published frame to Redis (%d bytes)", len(bytesToSend))
+    }
+
+    time.Sleep(200 * time.Millisecond)
 	}
 }
