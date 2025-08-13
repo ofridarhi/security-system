@@ -1,18 +1,19 @@
-# processing-service/main.py
-from service.processing_service import ProcessingService
 import logging
-    
-    
+
+from application import Application
 
 def main():
     # Configure basic logging to see output clearly.
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(funcName)s - %(message)s')
+    logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(funcName)s - %(message)s')
+    logger = logging.getLogger(__name__)
+
 
     try:
-        service = ProcessingService()
-        service.run()
+        logger.info("Starting application...")
+        app = Application()
+        app.run()
     except Exception as e:
-        logging.critical(f"A critical error occurred: {e}")
+        logger.critical(f"A critical error occurred in the application: {e}", exc_info=True)
 
 if __name__ == "__main__":
     main()
