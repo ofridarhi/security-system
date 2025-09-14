@@ -4,7 +4,7 @@ import base64
 
 from transport.redis_consumer import RedisConsumer
 from core.image_processor import ImageProcessor
-from data.mongo_event_repository import MongoEventRepository
+from data.mongo_event_repository import EventRepository
 
 class Application:
     def __init__(self):
@@ -13,7 +13,7 @@ class Application:
         """
         self.consumer = RedisConsumer()
         self.processor = ImageProcessor()
-        self.event_repo = MongoEventRepository() 
+        self.event_repo = EventRepository() 
         logging.info("Application initialized with all layers.")
 
     def _handle_frame_data(self, frame_data: bytes):
