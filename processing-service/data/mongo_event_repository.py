@@ -5,7 +5,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from shared_packeges.data_access.mongo_repository import MongoRepository
+from shared_packages.data_access.mongo_repository import MongoRepository
 
 logger = logging.getLogger(__name__)
 
