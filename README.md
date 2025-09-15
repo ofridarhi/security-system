@@ -6,6 +6,54 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A real-time, event-driven security system built on a microservices architecture. This project is designed as a complete end-to-end solution for capturing video, performing AI-based analysis, and presenting the results through a web interface.
+## Setup and Running (Current Implementation)
+
+### Prerequisites
+
+-   [Docker & Docker Compose](https://www.docker.com/products/docker-desktop/)
+-   [Go](https://go.dev/doc/install) (version 1.21 or newer)
+-   [Python](https://www.python.org/downloads/) (version 3.10 or newer)
+-   Git
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/ofridarhi/security-system.git
+cd security-system
+```
+
+### 2. Set Up Environment and Dependencies
+```bash
+# Create and activate a Python virtual environment
+python -m venv venv
+# On Windows: .\venv\Scripts\Activate.ps1 | On Linux/macOS: source venv/bin/activate
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Install Go dependencies
+cd ingestion-service && go mod tidy && cd ..
+```
+
+### 3. Run the System
+Each component must be run in a separate terminal from the project's root directory.
+
+**Terminal 1: Start Infrastructure (Docker)**
+```bash
+docker-compose up
+```
+
+**Terminal 2: Start the Ingestion Service (Go)**
+```bash
+cd ingestion-service
+go run main.go
+```
+
+**Terminal 3: Start the Processing Service (Python)**
+(Ensure the Python virtual environment is active)
+```bash
+python -m processing-service.main
+```
+The system is now running. The webcam will activate, and detection events will be logged and saved to MongoDB.
 
 ## Target Architecture
 
@@ -17,11 +65,11 @@ The system is designed as a distributed network of specialized microservices tha
                                      |     (React)     |
                                      +-------+---------+
                                              | (HTTP/WebSockets)
-+----------------+       +-----------+       |       +-----------------+
-|  Video Source  |------>|  Ingestion|------>| Redis |------>| Processing    |
++----------------+       +-----------+       |               +---------------+
+|  Video Source  |------>|  Ingestion|------>| Redis  |----->| Processing    |
 | (Webcam/Files) |       |  Service  |       | Pub/Sub|      | Service (AI)  |
 +----------------+       |  (Go)     |       +--------+      | (Python)      |
-                         +-----------+                      +-------+---------+
+                         +-----------+                       +------+--------+
                                                                     | (Writes)
                                +-----------------+    +-------------+-----------+
                                |  API Gateway    |<-->| PostgreSQL  |  MongoDB  |
@@ -79,51 +127,3 @@ The following components are planned to complete the full vision of the project:
 | **Databases**    | MongoDB, Redis, PostgreSQL (Planned)             |
 | **Infrastructure**| Docker, Docker Compose                         |
 
-## Setup and Running (Current Implementation)
-
-### Prerequisites
-
--   [Docker & Docker Compose](https://www.docker.com/products/docker-desktop/)
--   [Go](https://go.dev/doc/install) (version 1.21 or newer)
--   [Python](https://www.python.org/downloads/) (version 3.10 or newer)
--   Git
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
-```
-
-### 2. Set Up Environment and Dependencies
-```bash
-# Create and activate a Python virtual environment
-python -m venv venv
-# On Windows: .\venv\Scripts\Activate.ps1 | On Linux/macOS: source venv/bin/activate
-
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Install Go dependencies
-cd ingestion-service && go mod tidy && cd ..
-```
-
-### 3. Run the System
-Each component must be run in a separate terminal from the project's root directory.
-
-**Terminal 1: Start Infrastructure (Docker)**
-```bash
-docker-compose up
-```
-
-**Terminal 2: Start the Ingestion Service (Go)**
-```bash
-cd ingestion-service
-go run main.go
-```
-
-**Terminal 3: Start the Processing Service (Python)**
-(Ensure the Python virtual environment is active)
-```bash
-python -m processing-service.main
-```
-The system is now running. The webcam will activate, and detection events will be logged and saved to MongoDB.
