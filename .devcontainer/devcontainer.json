@@ -1,0 +1,24 @@
+{
+  "name": "Security System Dev Environment",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "moby": true
+    }
+  },
+  "forwardPorts": [6379, 27017, 5432],
+  "postCreateCommand": "echo '>>>> MY DEVCONTAINER IS WORKING <<<<' && docker-compose up -d && go mod tidy && pip install -r requirements.txt",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "golang.go",
+        "ms-azuretools.vscode-docker",
+        "mongodb.mongodb-vscode"
+      ]
+    }
+  }
+}
