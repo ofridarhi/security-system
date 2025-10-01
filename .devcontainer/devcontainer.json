@@ -4,13 +4,10 @@
     "dockerfile": "Dockerfile"
   },
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {
-      "version": "latest",
-      "moby": true
-    }
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
   "forwardPorts": [6379, 27017, 5432],
-  "postCreateCommand": "echo '>>>> MY DEVCONTAINER IS WORKING <<<<' && docker-compose up -d && go mod tidy && pip install -r requirements.txt",
+  "postCreateCommand": "docker-compose up -d && (cd ingestion-service && go mod tidy) && pip install -r requirements.txt",
   "customizations": {
     "vscode": {
       "extensions": [
